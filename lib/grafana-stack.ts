@@ -1,22 +1,17 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { userstack } from './user.resources';
-import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import * as timestream from 'aws-cdk-lib/aws-timestream';
 
-export class GrafanaPipelineStack extends cdk.Stack {
+
+
+export class GrafanaStack extends cdk.Stack {
     
-    userResources: userstack;
-
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        this.userResources = new userstack(this, 'userResources');
-        // Creates a CodeCommit repository called 'BasicStack'
-        const repo = new codecommit.Repository(this, 'GrafanaPipelineStack', {
-            repositoryName: "GrafanaPipelineStack"
+        const timestreamdb = new timestream.CfnDatabase(this, 'SimpleTimeStreamDatabase', {
+            databaseName: 'SimpleTimeStreamDatabase',
         });
-
-        new cdk.CfnOutput(this, 'repoHttpUrl', {value: repo.repositoryCloneUrlHttp});
         
 
     }

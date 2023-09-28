@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { userstack } from './user.resources';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import {CodeBuildStep, CodePipeline, CodePipelineSource} from "aws-cdk-lib/pipelines";
+import {GrafanaStackStage} from './pipeline-stage';
 
 export class CdkPipelineGrafanaStack extends cdk.Stack {
   
@@ -38,6 +39,9 @@ export class CdkPipelineGrafanaStack extends cdk.Stack {
           }
       )
     });
+
+    const deploy = new GrafanaStackStage(this, 'Deploy');
+    const deployStage = pipeline.addStage(deploy);
 
   }
 }
