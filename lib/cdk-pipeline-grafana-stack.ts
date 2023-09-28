@@ -1,16 +1,22 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { userstack } from './user.resources';
+import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 
 export class CdkPipelineGrafanaStack extends cdk.Stack {
+  
+  userResources: userstack;
+  
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    this.userResources = new userstack(this, 'userResources');
+        // Creates a CodeCommit repository called 'BasicStack'
+        const repo = new codecommit.Repository(this, 'GrafanaPipelineStack', {
+            repositoryName: "GrafanaPipelineStack"
+        });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CdkPipelineGrafanaQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+        new cdk.CfnOutput(this, 'repoHttpUrl', {value: repo.repositoryCloneUrlHttp});
+
   }
 }
