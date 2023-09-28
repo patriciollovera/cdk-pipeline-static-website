@@ -6,6 +6,9 @@ export class GrafanaStackStage extends Stage {
     constructor(scope: Construct, id: string, props?: StageProps) {
         super(scope, id, props);
 
-        new GrafanaStack(this, 'WebService');
+        new GrafanaStack(this, 'WebService',{
+            databaseName: 'SimpleTimeStreamDatabase_2',
+            tableName: 'Device_table_2',
+        });
     }
 }
