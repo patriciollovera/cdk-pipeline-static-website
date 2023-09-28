@@ -12,6 +12,13 @@ export class GrafanaStack extends cdk.Stack {
         const timestreamdb = new timestream.CfnDatabase(this, 'SimpleTimeStreamDatabase', {
             databaseName: 'SimpleTimeStreamDatabase',
         });
+
+        const timestreamtable = new timestream.CfnTable(this, 'SimpleTimeStreamTable', {
+            tableName: 'Device_Table',
+            databaseName: 'SimpleTimeStreamDatabase',
+          });
+          
+          timestreamtable.node.addDependency(timestreamdb);
         
 
     }
