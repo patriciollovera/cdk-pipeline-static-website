@@ -3,9 +3,9 @@ import { Construct } from 'constructs';
 import { userstack } from './user.resources';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import {CodeBuildStep, CodePipeline, CodePipelineSource} from "aws-cdk-lib/pipelines";
-import {GrafanaStackStage} from './pipeline-stage';
+import {CfStackStage} from './pipeline-stage';
 
-export class CdkPipelineGrafanaStack extends cdk.Stack {
+export class CdkPipelineCfStack extends cdk.Stack {
   
   userResources: userstack;
 
@@ -14,8 +14,8 @@ export class CdkPipelineGrafanaStack extends cdk.Stack {
 
     this.userResources = new userstack(this, 'userResources');
     // Creates a CodeCommit repository called 'BasicStack'
-    const repo = new codecommit.Repository(this, 'GrafanaPipelineStack', {
-        repositoryName: "GrafanaPipelineStack"
+    const repo = new codecommit.Repository(this, 'CfPipelineStack', {
+        repositoryName: "CfPipelineStack"
     });
 
     new cdk.CfnOutput(this, 'repoHttpUrl', {value: repo.repositoryCloneUrlHttp});
@@ -23,7 +23,7 @@ export class CdkPipelineGrafanaStack extends cdk.Stack {
     // // The basic pipeline declaration. This sets the initial structure
     // of our pipeline
     const pipeline = new CodePipeline(this, 'Pipeline', {
-      pipelineName: 'TrainingPipeline',
+      pipelineName: 'CfPipeline',
       synth: new CodeBuildStep('SynthStep', {
               input: CodePipelineSource.codeCommit(repo, 'master'),
               installCommands: [
@@ -40,7 +40,7 @@ export class CdkPipelineGrafanaStack extends cdk.Stack {
       )
     });
 
-    const deploy = new GrafanaStackStage(this, 'Deploy');
+    const deploy = new CfStackStage(this, 'Deploy');
     const deployStage = pipeline.addStage(deploy);
 
   }

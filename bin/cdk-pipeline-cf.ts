@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CdkPipelineGrafanaStack } from '../lib/cdk-pipeline-grafana-stack';
+import { CdkPipelineCfStack } from '../lib/cdk-pipeline-cf-stack';
 //import { GrafanaPipelineStack } from '../lib/pipeline-stack';
+import * as path from 'path';
 
 const app = new cdk.App();
-new CdkPipelineGrafanaStack(app, 'CdkPipelineGrafanaStack', {});
+new CdkPipelineCfStack(app, 'CdkPipelineCfStack', {});
