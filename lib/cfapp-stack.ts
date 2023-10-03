@@ -31,9 +31,7 @@ export class CFAppStack extends cdk.Stack {
 
         const { stage, path, domainName } = props;
 
-        const staticWebsiteBucket = new cdk.aws_s3.Bucket(
-            this,
-            `react-app-bucket-v2-${stage}`,
+        const staticWebsiteBucket = new cdk.aws_s3.Bucket(this, `react-app-bucket-v2-${stage}`,
             {
               bucketName: `react-app-v2-${stage}`,
               websiteIndexDocument: 'index.html',
@@ -44,9 +42,7 @@ export class CFAppStack extends cdk.Stack {
             }
         );
 
-        const cert = new cdk.aws_certificatemanager.Certificate(
-            this,
-            'Certificate',
+        const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
             {
               domainName: domainName,
               validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(),
@@ -95,9 +91,7 @@ export class CFAppStack extends cdk.Stack {
             }
           );
 
-        const distribution = new CloudFrontWebDistribution(
-            this,
-            'react-app-v2-distro',
+        const distribution = new CloudFrontWebDistribution(this, 'react-app-v2-distro',
             {
               viewerCertificate: viewerCert,
               originConfigs: [
@@ -120,9 +114,7 @@ export class CFAppStack extends cdk.Stack {
 
 
 
-        new cdk.aws_s3_deployment.BucketDeployment(
-            this,
-            `react-app-deployment-v2-${stage}`,
+        new cdk.aws_s3_deployment.BucketDeployment(this, `react-app-deployment-v2-${stage}`,
             {
               destinationBucket: staticWebsiteBucket,
               sources: [cdk.aws_s3_deployment.Source.asset(path)],
@@ -132,11 +124,6 @@ export class CFAppStack extends cdk.Stack {
               distribution,
             }
         );
-
-        
-
-
-        
 
     }
 }
