@@ -6,4 +6,9 @@ import { CdkPipelineCfStack } from '../lib/cdk-pipeline-cf-stack';
 import * as path from 'path';
 
 const app = new cdk.App();
-new CdkPipelineCfStack(app, 'CdkPipelineCfStack', {});
+new CdkPipelineCfStack(app, 'CdkPipelineCfStack', {
+    // env: {
+    //     account: process.env.CDK_DEFAULT_ACCOUNT,
+    //     region: process.env.CDK_DEFAULT_REGION,
+    // },
+});
