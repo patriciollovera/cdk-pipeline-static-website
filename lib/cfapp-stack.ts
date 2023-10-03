@@ -42,12 +42,12 @@ export class CFAppStack extends cdk.Stack {
             }
         );
 
-        const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
-            {
-              domainName: domainName,
-              validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(),
-            }
-        );
+        // const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
+        //     {
+        //       domainName: domainName,
+        //       validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(),
+        //     }
+        // );
 
         const cloudfrontOAI = new OriginAccessIdentity(this, 'CloudfrontOAI', {
             comment: `Cloudfront OAI for ${domainName}`,
@@ -68,32 +68,32 @@ export class CFAppStack extends cdk.Stack {
         );
 
 
-        const viewerCert = ViewerCertificate.fromAcmCertificate(
-            {
-              certificateArn: cert.certificateArn,
-              env: {
-                region: props.env?.region!,
-                account: props.env?.account!,
-              },
-              applyRemovalPolicy: cert.applyRemovalPolicy,
-              node: this.node,
-              stack: this,
-              metricDaysToExpiry: () =>
-                new Metric({
-                  namespace: 'TLS viewer certificate validity',
-                  metricName: 'TLS Viewer Certificate expired',
-                }),
-            },
-            {
-              sslMethod: SSLMethod.SNI,
-              securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
-              aliases: [domainName],
-            }
-          );
+        // const viewerCert = ViewerCertificate.fromAcmCertificate(
+        //     {
+        //       certificateArn: cert.certificateArn,
+        //       env: {
+        //         region: props.env?.region!,
+        //         account: props.env?.account!,
+        //       },
+        //       applyRemovalPolicy: cert.applyRemovalPolicy,
+        //       node: this.node,
+        //       stack: this,
+        //       metricDaysToExpiry: () =>
+        //         new Metric({
+        //           namespace: 'TLS viewer certificate validity',
+        //           metricName: 'TLS Viewer Certificate expired',
+        //         }),
+        //     },
+        //     {
+        //       sslMethod: SSLMethod.SNI,
+        //       securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
+        //       aliases: [domainName],
+        //     }
+        // );
 
         const distribution = new CloudFrontWebDistribution(this, 'react-app-v2-distro',
             {
-              viewerCertificate: viewerCert,
+              //viewerCertificate: viewerCert,
               originConfigs: [
                 {
                   s3OriginSource: {
