@@ -16,6 +16,7 @@ import {
   } from 'aws-cdk-lib/aws-cloudfront';
 
 import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { PropagatedTagSource } from 'aws-cdk-lib/aws-ecs';
 
 
 export interface CFAppProps extends cdk.StackProps {
@@ -74,8 +75,8 @@ export class CFAppStack extends cdk.Stack {
             {
               certificateArn: cert.certificateArn,
               env: {
-                region: props.env?.region!,
-                account: props.env?.account!,
+                region: props.region,
+                account: props.account,
               },
               applyRemovalPolicy: cert.applyRemovalPolicy,
               node: this.node,
