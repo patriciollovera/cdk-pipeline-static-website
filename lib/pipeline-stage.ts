@@ -9,7 +9,7 @@ export class CfStackStage extends Stage {
 
         new CFAppStack(this, 'WebService',{
             stage: 'dev',
-            path: 'WebService',
+            path: path.join(__dirname, '..', 'react-app'),
             domainName: 'aws-training.com',
         });
     }
