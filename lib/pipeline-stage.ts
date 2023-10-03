@@ -11,6 +11,8 @@ export class CfStackStage extends Stage {
             stage: 'dev',
             path: path.join(__dirname, '..', 'react-app'),
             domainName: 'aws-training.com',
+            account: '206251961235',
+            region: 'us-east-1',
         });
     }
 }
