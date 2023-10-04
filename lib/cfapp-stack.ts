@@ -18,6 +18,7 @@ import {
 import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { PropagatedTagSource } from 'aws-cdk-lib/aws-ecs';
 
+import * as route53 from 'aws-cdk-lib/aws-route53';
 
 export interface CFAppProps extends cdk.StackProps {
     stage: string;
@@ -45,10 +46,15 @@ export class CFAppStack extends cdk.Stack {
             }
         );
 
+
+        const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
+            zoneName: 'canonicas.com.ar',
+        });
+
         const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
             {
               domainName: domainName,
-              validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(),
+              validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(myHostedZone),
             }
         );
 
