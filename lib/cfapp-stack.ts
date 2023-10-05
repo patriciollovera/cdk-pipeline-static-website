@@ -48,7 +48,7 @@ export class CFAppStack extends cdk.Stack {
 
 
         const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
-            zoneName: 'ceocom.com.ar',
+            zoneName: domainName,
         });
 
         const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
