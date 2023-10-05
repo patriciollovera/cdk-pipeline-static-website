@@ -53,7 +53,7 @@ export class CFAppStack extends cdk.Stack {
 
         const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
             {
-              domainName: domainName,
+              domainName: '*.ceocom.com.ar',
               validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(myHostedZone),
             }
         );
