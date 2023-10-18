@@ -37,7 +37,7 @@ export class CFAppStack extends cdk.Stack {
 
         const staticWebsiteBucket = new cdk.aws_s3.Bucket(this, `react-app-bucket-v2-${stage}`,
             {
-              bucketName: `react-app-v2-${stage}`,
+              bucketName: `ceocom.com.ar`,
               websiteIndexDocument: 'index.html',
               websiteErrorDocument: 'index.html',
               removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -53,7 +53,7 @@ export class CFAppStack extends cdk.Stack {
 
         const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
             {
-              domainName: '*.ceocom.com.ar',
+              domainName: 'ceocom.com.ar',
               validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(myHostedZone),
             }
         );
