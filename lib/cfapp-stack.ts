@@ -19,6 +19,7 @@ import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { PropagatedTagSource } from 'aws-cdk-lib/aws-ecs';
 
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 
 export interface CFAppProps extends cdk.StackProps {
     stage: string;
@@ -35,9 +36,9 @@ export class CFAppStack extends cdk.Stack {
 
         const { stage, path, domainName } = props;
 
-        const staticWebsiteBucket = new cdk.aws_s3.Bucket(this, `react-app-bucket-v2-${stage}`,
+        const SubDomainBucket = new cdk.aws_s3.Bucket(this, `sub-domain-bucket-${stage}`,
             {
-              bucketName: `ceocom.com.ar`,
+              bucketName: `www.ceocom.com.ar`,
               websiteIndexDocument: 'index.html',
               websiteErrorDocument: 'index.html',
               removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -46,6 +47,22 @@ export class CFAppStack extends cdk.Stack {
             }
         );
 
+        const RootDoaminBucket = new cdk.aws_s3.Bucket(this, `root-domain-bucket-${stage}`,
+            {
+              bucketName: `ceocom.com.ar`,
+              removalPolicy: cdk.RemovalPolicy.DESTROY,
+              publicReadAccess: false,
+              blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+              websiteRedirect: { 
+                hostName: 'www.ceocom.com.ar',
+                protocol: cdk.aws_s3.RedirectProtocol.HTTPS,
+
+              },
+              websiteIndexDocument: 'index.html',
+              websiteErrorDocument: 'index.html',
+
+            }
+        );
 
         const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
             zoneName: domainName,
@@ -53,8 +70,9 @@ export class CFAppStack extends cdk.Stack {
 
         const cert = new cdk.aws_certificatemanager.Certificate(this, 'Certificate',
             {
-              domainName: 'ceocom.com.ar',
+              domainName: domainName,
               validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(myHostedZone),
+              subjectAlternativeNames: ['*.ceocom.com.ar'],
             }
         );
 
@@ -62,7 +80,7 @@ export class CFAppStack extends cdk.Stack {
             comment: `Cloudfront OAI for ${domainName}`,
         });
 
-        staticWebsiteBucket.addToResourcePolicy(
+        SubDomainBucket.addToResourcePolicy(
             new cdk.aws_iam.PolicyStatement({
               sid: 's3BucketPublicRead',
               effect: cdk.aws_iam.Effect.ALLOW,
@@ -72,8 +90,22 @@ export class CFAppStack extends cdk.Stack {
                   cloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId
                 ),
               ],
-              resources: [`${staticWebsiteBucket.bucketArn}/*`],
+              resources: [`${SubDomainBucket.bucketArn}/*`],
             })
+        );
+
+        RootDoaminBucket.addToResourcePolicy(
+          new cdk.aws_iam.PolicyStatement({
+            sid: 's3BucketPublicRead',
+            effect: cdk.aws_iam.Effect.ALLOW,
+            actions: ['s3:GetObject'],
+            principals: [
+              new CanonicalUserPrincipal(
+                cloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId
+              ),
+            ],
+            resources: [`${RootDoaminBucket.bucketArn}/*`],
+          })
         );
 
 
@@ -95,18 +127,18 @@ export class CFAppStack extends cdk.Stack {
             },
             {
               sslMethod: SSLMethod.SNI,
-              securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
+              securityPolicy: SecurityPolicyProtocol.TLS_V1_2_2021,
               aliases: [domainName],
             }
         );
 
-        const distribution = new CloudFrontWebDistribution(this, 'react-app-v2-distro',
+        const distribution = new CloudFrontWebDistribution(this, 'sub-domain-distro',
             {
               viewerCertificate: viewerCert,
               originConfigs: [
                 {
                   s3OriginSource: {
-                    s3BucketSource: staticWebsiteBucket,
+                    s3BucketSource: SubDomainBucket,
                     originAccessIdentity: cloudfrontOAI,
                   },
                   behaviors: [
@@ -114,6 +146,7 @@ export class CFAppStack extends cdk.Stack {
                       isDefaultBehavior: true,
                       compress: true,
                       allowedMethods: CloudFrontAllowedMethods.GET_HEAD_OPTIONS,
+                      viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     },
                   ],
                 },
